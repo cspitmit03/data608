@@ -1,0 +1,110 @@
+---
+title: "Project 1"
+author: "Cesar L. Espitia"
+date: "2/11/2018"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+**Principles of Data Visualization and Introduction to ggplot2**
+
+I have provided you with data about the 5,000 fastest growing companies in the US, as compiled by Inc. magazine. lets read this in:
+
+```{r}
+
+inc <- read.csv("https://raw.githubusercontent.com/charleyferrari/CUNY_DATA_608/master/module1/Data/inc5000_data.csv", header= TRUE)
+
+```
+
+And lets preview this data:
+
+```{r}
+
+head(inc)
+
+```
+```{r}
+
+summary(inc)
+
+```
+
+Think a bit on what these summaries mean. Use the space below to add some more relevant non-visual exploratory information you think helps you understand this data:
+
+```{r}
+
+# The following provides additional variables for Revenue and No. of Employees to help further describe the shape of the data.
+
+library(pastecs)
+stat.desc(inc$Revenue)
+stat.desc(inc$Employees)
+
+```
+
+## Question 1
+
+Create a graph that shows the distribution of companies in the dataset by State (ie how many are in each state). There are a lot of States, so consider which axis you should use. This visualization is ultimately going to be consumed on a 'portrait' oriented screen (ie taller than wide), which should further guide your layout choices.
+
+```{r Fig1, fig.height = 6}
+
+# Answer Question 1 here
+library(plyr)
+library(ggplot2)
+state <- count(inc, "State")
+
+state<-state[order(state[,2],decreasing=FALSE),]
+     
+barplot(state$freq, ylab= "States", xlab="Companies per State", horiz=TRUE, beside = TRUE, space=0.1, ylim = c(0,60), yaxp=c(0,5,1),
+  names.arg=state$State, cex.names=0.5, las=1)
+```
+
+## Quesiton 2
+
+Lets dig in on the state with the 3rd most companies in the data set. Imagine you work for the state and are interested in how many people are employed by companies in different industries. Create a plot that shows the average and/or median employment by industry for companies in this state (only use cases with full data, use R's `complete.cases()` function.) In addition to this, your graph should show how variable the ranges are, and you should deal with outliers.
+
+```{r}
+library(ggplot2)
+library(gridExtra)
+state[order(-state$freq),][3,]
+#NY is third
+complete.cases(inc[1:8,])
+#all cases are complete
+NY <- inc[ which(inc$State=="NY"), ]
+NYc <- NY[c("Industry","Employees")]
+IM <- aggregate(NYc$Employees, by=list(NY$Industry), 
+  FUN=mean, na.rm=TRUE)
+colnames(IM) <- c("Industry","EmployeeMean")
+
+p <- ggplot(NY,aes(NY$Industry, NY$Employees))+geom_boxplot()+scale_y_log10()+theme_classic()+labs(title="Employees by Industry in NY", x="Industry", y="Employee Counts (Log Scale)")
+p+coord_flip()
+
+e <- ggplot(IM,aes(IM$Industry, IM$EmployeeMean))+geom_bar(stat="identity")+theme_classic()+labs(title="Average Employees by Industry in NY", x="Industry", y="Employee Means")
+e+coord_flip()
+```
+
+## Question 3
+
+Now imagine you work for an investor and want to see which industries generate the most revenue per employee. Create a chart that makes this information clear. Once again, the distribution per industry should be shown.
+
+```{r}
+
+# Answer Question 3 here
+library(ggplot2)
+library(gridExtra)
+
+incc <- inc[c("Industry","Employees","Revenue")]
+IM <- aggregate(incc[c("Employees","Revenue")], by=list(incc$Industry), 
+  FUN=sum, na.rm=TRUE)
+colnames(IM) <- c("Industry","EmployeeSum","RevenueSum")
+IM$RevPerEmp <- with(IM,IM$RevenueSum/IM$EmployeeSum/1000)
+
+IM <- IM[order(IM[,4],decreasing=TRUE),]
+
+e <- ggplot(IM,aes(IM$Industry, IM$RevPerEmp))+geom_bar(stat="identity")+theme_classic()+labs(title="Revenue per Employee by Industry in NY", x="Industry", y="In 000's")
+
+e+coord_flip()+geom_hline(yintercept=mean(IM$RevPerEmp), linetype="dashed", 
+                color = "black", size=0.5)+ geom_text(aes(0,mean(IM$RevPerEmp),label = paste(round(mean(IM$RevPerEmp),0),"Nationwide Average")), hjust=-0.1, vjust = -1, color = "blue")
+```
+
+

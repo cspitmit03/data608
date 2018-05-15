@@ -1,0 +1,133 @@
+<html>
+
+<!--
+
+    Note to Students:
+
+        This is a very short introduction to using Javascript in the browser.
+
+        To see this as a webpage, you have to start a *Local Web Server*. There are many ways to do this: since you all have python installed, we will use python.
+
+        - Open terminal
+
+        - 'cd' into the directory where this html file is (js_in_webpage.html)
+
+        - Type the following into the terminal and hit 'enter':
+            python -m SimpleHTTPServer
+
+            your server should read something like: Serving HTTP on 0.0.0.0 port 8000 ...
+
+        - now go to any browser and type in the HTTP address and the filename: something like:
+
+            http://0.0.0.0:8000/js_in_webpage.html
+
+            or
+
+            http://localhost:8000/js_in_webpage.html
+
+        - Congrats: you now have a local HTTP server running. Now, every time you change this file and save it, when you reload the browser you will see your changes!
+-->
+<meta charset="utf-8">
+<style>
+    table {
+        border-collapse: collapse;
+        border: 2px black solid;
+        font: 12px sans-serif;
+    }
+
+    td {
+        border: 1px black solid;
+        padding: 5px;
+    }
+</style>
+<head><title>Data 608 Project 5</title></head>
+
+<body>
+
+<h1>by Cesar Espitia, April 10, 2018</h1>
+<h2>Beginner HomeWork </h2>
+
+
+<script type="text/javascript">
+
+document.write('<br><p>Enter a word and I\'ll write it in reverse!!')
+
+// Basic functions
+
+function reverseString(str) {
+    var splitString = str.split("");
+
+
+
+    var reverseArray = splitString.reverse();
+
+
+
+    var joinArray = reverseArray.join("");
+
+
+    //Step Return the reversed string
+    return(joinArray);
+};
+function calc2(){
+    var t2 = document.getElementById("target2");
+    t2.innerHTML = reverseString(document.getElementById('str').value);
+}
+</script>
+<p>
+<form>
+    <input id="str" type="text" size="30">
+    <input type="button" value="check" onClick="calc2();">
+</form>
+</p>
+
+<div id="target2"></div>
+
+
+
+
+<script type="text/javascript">
+
+document.write('<br><p>Enter a number and I\'ll print a 5x4 multiplication table!!')
+
+// Basic functions
+
+function multiplier(num2) {
+    // Step 1. Use the split() method to return a new array
+    var i; // counter
+    var c;
+    var el = ""; // table
+    var final = ""
+    var left = [1,5,9,13,17]
+
+    // ["h", "e", "l", "l", "o"]
+
+    for (i = 1; i < 21; i++) {
+        c = num2 * i;
+        if (left.indexOf(i) == true){el += "<tr><td>" + c + "</td>"}
+        if (i%4 == 0){el += "<td>" + c + "</td></tr>"} else (el += "<td>"+c+"</td>")
+    }
+    final = "<table>"+el+"</table>"
+    return(final);
+};
+
+function calc3(){
+    var t3 = document.getElementById("target3");
+    t3.innerHTML = multiplier(document.getElementById('num2').value);
+}
+</script>
+<p>
+<form>
+    <input id="num2" type="number" size="4">
+    <input type="button" value="check" onClick="calc3();">
+</form>
+</p>
+
+<div id="target3"></div>
+
+
+
+
+
+</body>
+</html>
